@@ -1,7 +1,9 @@
+# Libraries
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-# --- Style settings for high visibility ---
+# Settings
 plt.rcParams.update({
     'font.size': 14,
     'axes.labelsize': 16,
@@ -11,9 +13,14 @@ plt.rcParams.update({
 })
 
 def generate_early_stage_divergence():
-    # 1. Parameters
+    # Detect path: Up one level from 'src' to the project root
+    base_path = Path(__file__).parent.parent
+    output_dir = base_path / "figures"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Parameters
     T = 10.0
-    dt = 0.05  # Smaller step for better path resolution
+    dt = 0.05  
     steps = int(T / dt)
     s0 = 0.99
     mu = eta = 0.3
@@ -22,11 +29,11 @@ def generate_early_stage_divergence():
     sigma_j = 1.5
     N = 20000  # Number of Monte Carlo paths
 
-    # 2. Calibration
+    # Calibration
     var_j = (sigma_j**2 * mu * (a - mu)) / (2 * theta + a * sigma_j**2)
     sigma_cir = np.sqrt((var_j * 2 * kappa) / eta)
 
-    # 3. Path Simulation
+    # Path Simulation
     h_jacobi = np.zeros(N)
     h_cir = np.zeros(N)
     pj = np.full(N, mu)
@@ -47,14 +54,12 @@ def generate_early_stage_divergence():
         h_jacobi += pj * dt
         h_cir += pc * dt
 
-    # 4. Calculate Infected Fraction 1 - S_T
+    # Calculate Infected Fraction 1 - S_T
     inf_jacobi = 1 - 1 / (1 + ((1/s0) - 1) * np.exp(h_jacobi))
     inf_cir = 1 - 1 / (1 + ((1/s0) - 1) * np.exp(h_cir))
 
-    # 5. Plotting
+    # Plotting
     plt.figure(figsize=(10, 7))
-
-    # Histogram of the infected fraction
     plt.hist(inf_jacobi, bins=80, range=(0, 1), density=True, alpha=0.5, color='blue', label='Jacobi (Bounded)')
     plt.hist(inf_cir, bins=80, range=(0, 1), density=True, alpha=0.5, color='red', label='CIR (Unbounded)')
 
@@ -63,10 +68,10 @@ def generate_early_stage_divergence():
     plt.ylabel('Density')
     plt.legend(loc='upper right')
     plt.grid(alpha=0.3)
-
     plt.tight_layout()
-    plt.savefig('sub1.3.png', dpi=300)
-    print("Figure 'sub1.3.png' saved successfully.")
+    
+    # Save using the automatic path in Modeling_CIR/figures
+    plt.savefig(output_dir / '08_infected_fraction_fig8.png', dpi=300)
     plt.show()
 
 if __name__ == "__main__":

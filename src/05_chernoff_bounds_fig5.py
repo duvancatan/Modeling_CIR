@@ -1,39 +1,45 @@
-
+# Libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from pathlib import Path
 
-# --- STYLE SETTINGS FOR THE PAPER ---
+# Settings 
 plt.rcParams.update({
     'font.size': 14,
     'axes.labelsize': 16,
     'axes.titlesize': 18,
     'legend.fontsize': 11,
     'lines.linewidth': 2.5,
-    'text.usetex': False  # Disabling external TeX to avoid system dependencies
+    'text.usetex': False 
 })
 
-def plot_chernoff_transition_english():
-    # 1. CIR Model Parameters
+# CIR Model Parameters #
+def plot_chernoff_transition_english(): 
+    # Detect path: Up one level from 'src' to the project root
+    base_path = Path(__file__).parent.parent
+    output_dir = base_path / "figures"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     kappa = 2.0
     sigma = 0.3
     eta = 0.4
     p0 = 0.5
     t = 1.0
 
-    # Singularity lambda_c (where the MGF blows up)
+    # Singularity lambda_c
     lambda_c = (kappa**2) / (2 * sigma**2)
 
-    # Expected value of H_1 (Reference for the trivial bound)
+    # Expected value of H_1
     mean_H = eta*t + (p0 - eta)*(1 - np.exp(-kappa*t))/kappa
 
-    # 2. M values for analysis (The transition zoom)
+    # M values for analysis
     Ms = [0.3, 0.5, 0.55, 0.6, 0.65, 0.7]
 
-    # Lambda range (from near 0 to near lambda_c)
+    # Lambda range
     lambdas = np.linspace(0.001, lambda_c - 0.05, 500)
 
-    # 3. Log-MGF function: Lambda_t(lambda) = A(t, lam) + B(t, lam)*p0
+    # Log-MGF function: Lambda_t(lambda) = A(t, lam) + B(t, lam)*p0
     def get_log_mgf(lam_val):
         gamma = np.sqrt(kappa**2 - 2 * sigma**2 * lam_val)
         exp_gt = np.exp(gamma * t)
@@ -45,10 +51,8 @@ def plot_chernoff_transition_english():
 
     log_mgf_vals = get_log_mgf(lambdas)
 
-    # 4. Figure Creation
     plt.figure(figsize=(12, 8))
 
-    # Color map for the different M curves
     colors = cm.plasma(np.linspace(0, 0.8, len(Ms)))
 
     for i, M in enumerate(Ms):
@@ -73,7 +77,7 @@ def plot_chernoff_transition_english():
             # Mark the minimum (optimal lambda*)
             plt.plot(opt_lambda, min_f, 'ko', markersize=6, zorder=5)
 
-    # 5. Aesthetic details
+    # Plotting
     plt.axvline(x=lambda_c, color='red', linestyle=':', lw=2,
                 label=r'Singularity $\lambda_c \approx$ ' + f'{lambda_c:.2f}')
 
@@ -89,8 +93,9 @@ def plot_chernoff_transition_english():
     plt.xlim(0, lambda_c + 0.5)
 
     plt.tight_layout()
-    plt.savefig('Chernoff_Transition_English.png', dpi=300)
-    print("Figure successfully saved as 'Chernoff_Transition_English.png'")
+    
+    # Save using the automatic path in Modeling_CIR/figures
+    plt.savefig(output_dir / '05_chernoff_bounds_fig5.png', dpi=300)
     plt.show()
 
 if __name__ == "__main__":
