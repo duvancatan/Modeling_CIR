@@ -17,7 +17,7 @@ Processes: Asymptotic Results and Preliminary Intervention Strategies"**.
 
 ## Abstract
 
-This project introduces a stochastic framework for modeling epidemic transmission rates using processes of the form $\beta_{t}=\varphi(t)P_{t}$. We utilize the **Cox-Ingersoll-Ross (CIR)** and the **Jacobi** process to capture the intrinsic randomness of infections ($P_t$), while a deterministic function ($\varphi(t)$) models the impact of public health interventions. 
+This project introduces a stochastic framework for modeling epidemic transmission rates using processes of the form $\beta_{t}=\varphi(t)P_{t}$. We use the **Cox-Ingersoll-Ross (CIR)** and the **Jacobi** process to capture the intrinsic randomness of infections $P_t$, while a deterministic function $\varphi(t)$ models the impact of public health interventions. 
 
 Key contributions include:
 
